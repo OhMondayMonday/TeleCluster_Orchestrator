@@ -4,13 +4,14 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { LogOut, LayoutDashboard, BookOpen, Server } from "lucide-react"
+import { LogOut, LayoutDashboard, BookOpen, Server, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navigation = [
   { name: "Panel de Control", href: "/superadmin/dashboard", icon: LayoutDashboard },
   { name: "Cursos", href: "/superadmin/courses", icon: BookOpen },
   { name: "Recursos", href: "/superadmin/resources", icon: Server },
+  { name: "Configuración", href: "/superadmin/system", icon: Settings },
 ]
 
 export function SuperadminNav() {
