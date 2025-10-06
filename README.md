@@ -11,6 +11,10 @@ Este repositorio contiene el sistema completo del TeleCluster Orchestrator para 
 │   ├── hooks/        # Custom hooks de React
 │   ├── lib/          # Librerías y utilidades
 │   └── public/       # Archivos estáticos
+├── backend/           # API REST backend (FastAPI)
+│   ├── src/          # Código fuente de la API
+│   │   └── main.py   # Aplicación principal
+│   └── uploads/      # Almacenamiento de imágenes
 └── README.md         # Este archivo
 ```
 
@@ -40,6 +44,38 @@ pnpm dev
 ```
 
 El servidor de desarrollo estará disponible en http://localhost:3000
+
+## Backend
+
+El backend está desarrollado con:
+- **FastAPI** - Framework web moderno de Python
+- **Python 3.8+** - Lenguaje de programación
+- **Uvicorn** - Servidor ASGI de alto rendimiento
+- **Aiofiles** - Manejo asíncrono de archivos
+
+### Funcionalidades
+
+- Upload de imágenes de SO (ISO, QCOW2, VMDK, VHD)
+- Gestión completa de imágenes (CRUD)
+- API REST con documentación automática (Swagger)
+- Preparado para integración con NFS y headnode
+
+### Desarrollo Local
+
+Para ejecutar el backend localmente:
+
+```bash
+cd backend
+python -m venv venv
+.\venv\Scripts\Activate.ps1  # Windows PowerShell
+pip install -r requirements.txt
+cd src
+python main.py
+```
+
+El servidor API estará disponible en http://localhost:8000
+
+Documentación interactiva: http://localhost:8000/docs
 
 ## Contribución
 

@@ -1,0 +1,7 @@
+{
+  "name": "telecluster-backend",
+  "version": "1.0.0",
+  "description": "FastAPI backend para TeleCluster Orchestrator",
+  "author": "Miguel Angel Alvizuri <a20212472@pucp.edu.pe>",
+  "license": "MIT"
+}
