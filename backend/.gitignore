@@ -3,14 +3,7 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
 venv/
 ENV/
-.env
-uploads/
-*.log
-.DS_Store
-*.pem
-*.key
 .vscode/
 .idea/
