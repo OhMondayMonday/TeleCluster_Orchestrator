@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # Worker Agent - Gestión de red y virtualización
+  telecluster-worker:
+    build:
+      context: ./Backend/worker-agents
+      dockerfile: Dockerfile
+    container_name: telecluster-worker
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_NICE
+      - SYS_RESOURCE
+    devices:
+      - /dev/kvm:/dev/kvm
+      - /dev/vhost-net:/dev/vhost-net
+    volumes:
+      - /var/run:/var/run
+      - /var/lib/libvirt:/var/lib/libvirt
+      - /etc/libvirt:/etc/libvirt
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - telecluster-worker-data:/var/lib/telecluster
+      - telecluster-worker-config:/etc/telecluster
+      - telecluster-logs:/var/log/telecluster
+    ports:
+      - "8000:8000"
+    environment:
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.telecluster.service=worker-agent"
+      - "com.telecluster.version=1.0.0"
+
+  # Gateway Agent - Gestión de NAT, port forwarding y firewall
+  telecluster-gateway:
+    build:
+      context: ./Backend/gateway
+      dockerfile: Dockerfile
+    container_name: telecluster-gateway
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - telecluster-gateway-config:/etc/telecluster/gateway
+      - telecluster-logs:/var/log/telecluster
+    ports:
+      - "8001:8001"
+    environment:
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - telecluster-worker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    labels:
+      - "com.telecluster.service=gateway-agent"
+      - "com.telecluster.version=1.0.0"
+
+volumes:
+  # Datos persistentes del worker agent
+  telecluster-worker-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /opt/telecluster/worker/data
+      o: bind
+  
+  # Configuración del worker agent  
+  telecluster-worker-config:
+    driver: local
+    driver_opts:
+      type: none
+      device: /opt/telecluster/worker/config
+      o: bind
+      
+  # Configuración del gateway agent
+  telecluster-gateway-config:
+    driver: local
+    driver_opts:
+      type: none
+      device: /opt/telecluster/gateway/config
+      o: bind
+      
+  # Logs compartidos
+  telecluster-logs:
+    driver: local
+    driver_opts:
+      type: none
+      device: /opt/telecluster/logs
+      o: bind
+
+networks:
+  default:
+    name: telecluster-network
